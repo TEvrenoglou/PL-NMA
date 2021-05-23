@@ -11,7 +11,6 @@ N.sim=1000
 
 data1=list()
 data2=list()
-data20=list()
 data3=list()
 data4=list()
 logOR=list()
