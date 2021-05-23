@@ -66,7 +66,6 @@ N.sim=1000
 
 data1=list()
 data2=list()
-data20=list()
 data3=list()
 logOR=list()
 logOR1=list()
@@ -139,7 +138,6 @@ for (i in 1:N.sim)
   }}
 for (i in 1:N.sim){ data1[[i]]=data1[[i]][,-c(6:11)]
 data2[[i]]=dlong(data1[[i]])
-data20[[i]]=drop00(data2[[i]])
 data3[[i]]=dlong1(data1[[i]])
 
 }
