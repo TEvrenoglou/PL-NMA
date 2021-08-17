@@ -86,8 +86,8 @@ drop00=function(data){
 ####################################################################################
 ####################################################################################
 
-#####  READ THE FULL DATASET 
-data11=read.csv("C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Github\\Analyses\\psoriasis_data.csv")
+#####  READ THE "psoriasis_data.csv" from: https://github.com/TEvrenoglou/PLNMA-simulation
+data11=read.csv("READ THE DATA HERE")
 
 
 ##### CREATE A DATASET WITHOUT STUDIES WITH ZERO EVENTS IN ALL ARMS
