@@ -105,7 +105,6 @@ data2=data1
 data4=data1
 for (i in 1:N.sim){ names(data2[[i]])=c("study","treat","n","events")}
 for (i in 1:N.sim){ names(data4[[i]])=c("study","treatment","sampleSize","responders")}
-for (i in 1:N.sim){ data20[[i]]=drop00(data2[[i]])}
 
 library(netmeta)
 for(i in 1:N.sim){
