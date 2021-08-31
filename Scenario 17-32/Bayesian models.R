@@ -280,51 +280,44 @@ results
 
 
 
-results.csv=write.csv(results,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Simulation new\\Scenario 31\\Bayesian\\main_results_Bayesian.csv",row.names = TRUE)
-
-
 bias1=data.frame(biasBL_NMA_fixed,biasBL_NMA_random)
 names(bias1)=c("biasBL_NMA_fixed","biasBL_NMA_random")
 
-write.csv(bias1,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Simulation new\\Scenario 31\\Bayesian\\bias_Bayesian.csv",row.names = FALSE)
 
 avg_bias_tau=c(round(mean(bias_tau), digits=2))
 avg_bias_tau=data.frame(avg_bias_tau)
 names(avg_bias_tau)=c("mean_bias_tau")
 
-write.csv(avg_bias_tau,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Simulation new\\Scenario 31\\Bayesian\\mean_bias_tau.csv",row.names = FALSE)
+
 
 
 mse1=data.frame(mseBL_NMA_fixed,mseBL_NMA_random)
 names(mse1)=c("mseBL_NMA_fixed","mseBL_NMA_random")
-write.csv(mse1,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Simulation new\\Scenario 31\\Bayesian\\mse_Bayesian.csv",row.names = FALSE) 
+
 #############################################################################################################################################
 coverage11=data.frame(coverageBL_NMA_fixed,coverageBL_NMA_random)
 names(coverage11)=c("coverage.BL_NMA_fixed","coverageBL_NMA_random")
-write.csv(coverage11,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Simulation new\\Scenario 31\\Bayesian\\coverage_Bayesian.csv",row.names = FALSE)
+
 
 tau_info=data.frame(bias_tau,tau,tau_test)
 names(tau_info)=c("bias_tau","tau","tau_test")
-write.csv(tau_info,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Simulation new\\Scenario 31\\Bayesian\\tau_info_Bayesian.csv",row.names = FALSE)
+
 
 
 lengths_bayes=data.frame(length_fixed_bayes,length_random_bayes)
 names(lengths_bayes)=c("length.BL_NMA_fixed","lengthBL_NMA_random")
-write.csv(lengths_bayes,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Simulation new\\Scenario 31\\Bayesian\\lengths_Bayesian.csv",row.names = FALSE)
+
 
 
 
 mean_lengths_bayes=data.frame(mean(length_fixed_bayes),mean(length_random_bayes))
 names(lengths_bayes)=c("length.BL_NMA_fixed","lengthBL_NMA_random")
-write.csv(mean_lengths_bayes,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Simulation new\\Scenario 31\\Bayesian\\mean_lengths_Bayesian.csv",row.names = FALSE)
+
 
 
 credible_intervals=data.frame(lower_fixed_bayes,upper_fixed_bayes,lower_random_bayes,upper_random_bayes,lower_tau,upper_tau)
 names(credible_intervals)=c("lower.BL_NMA_fixed","upper.BL_NMA_fixed","lower.BL_NMA_random","upper.BL_NMA_random",
                             "lower.tau","upper.tau")
-
-write.csv(credible_intervals,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Simulation new\\Scenario 31\\Bayesian\\credible_intervals.csv",row.names = FALSE)
-
 
 
 
@@ -332,12 +325,10 @@ write.csv(credible_intervals,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Simulati
 standard_errors_bayes=data.frame(se_fixed_bayes,se_random_bayes,se_tau)
 names(standard_errors_bayes)=c("se.BL_NMA_fixed","se.BL_NMA_random","se.tau")
 
-write.csv(standard_errors_bayes,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Simulation new\\Scenario 31\\Bayesian\\standard.errors_Bayesian.csv",row.names = FALSE)
 
 
 estimates_bayes=data.frame(estimate_fixed_bayes,estimate_random_bayes)
 names(estimates_bayes)=c("logOR.BL_NMA_fixed","logOR.BL_NMA_random")
 
-write.csv(estimates_bayes,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Simulation new\\Scenario 31\\Bayesian\\logOR_Bayesian.csv",row.names = FALSE)
 
 
