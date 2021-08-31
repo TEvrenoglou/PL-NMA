@@ -61,7 +61,7 @@ dlong1 <- function(data){
 set.seed(44)
 N.sim=1000
 
-###### Scenario 20 ######
+
 data1=list()
 data2=list()
 data3=list()
