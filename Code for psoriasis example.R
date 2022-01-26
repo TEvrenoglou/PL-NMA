@@ -194,7 +194,7 @@ print(tau_lb)
 tau_ub=(round((s2[nrow(s2),5]),digits = 2)) ## upper bound for tau
 print(tau_ub)
 
-A=gelman.diag(mtc.run1)
+B=gelman.diag(mtc.run1)
 gelman.plot(mtc.run1)
 
 
@@ -235,7 +235,7 @@ print(tau_lb1)
 tau_ub1=(round((s21[nrow(s21),5]),digits = 2)) ## upper bound for tau
 print(tau_ub1)
 
-A1=gelman.diag(mtc.run11)
+B1=gelman.diag(mtc.run11)
 gelman.plot(mtc.run11)
 
 ############### Common-effect (d~N(0,10000))  model
@@ -263,5 +263,5 @@ print(round((exp(s12[,1])),digits = 2)) ### treatments effects
 print(round((exp(s22)),digits = 2)[,1]) ### lower bounds of credible interval
 print(round((exp(s22)),digits = 2)[,5]) ### upper bounds of credible interval
 
-A2=gelman.diag(mtc.run2)
+B2=gelman.diag(mtc.run2)
 gelman.plot(mtc.run2)
