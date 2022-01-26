@@ -1070,33 +1070,3 @@ interval=cbind.data.frame(lower_fixed,upper_fixed,
 het1=cbind(counter_PLNMA,dispersion_PLNMA,counterBN,tau2_BN,counterBN_random,tau2_BN_random)
 het1=as.data.frame(het1)
 names(het1)=c("counter_Fletcher","dispersion","counter BN","tau BN","counter BN random intercepts","tau random intercept")                      
-
-
-
-#####################################################################################################################################
-write.csv(se,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\standard errors.csv",row.names = F)
-write.csv(estimates,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\estimates.csv",row.names = F)
-write.csv(results,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\main_results.csv",row.names = F)
-write.csv(results_bias,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\bias.csv",row.names = F)
-write.csv(results_coverage,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\coverage.csv",row.names = F)
-write.csv(results_mse,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\mse.csv",row.names = F)
-write.csv(results_length,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\length.csv",row.names = F)
-
-##############################################################
-###################### heterogeneity-convergence for binomial normal ##########################
-
-write.csv(convergence_summary,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\convergence_estimates_bayes.csv",row.names = F)
-write.csv(convergence_tau,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\convergence_tau_bayes.csv",row.names = F)
-write.csv(results_convergence1,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\overall_results_convergence_bayes.csv",row.names =F)
-
-##############################################################
-######## heterogeneity-convergence for binomial normal ##########################
-write.csv(count_fail,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\convergence fail.csv")
-write.csv(summaries_fail,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\convergence fail_summaries.csv")
-write.csv(new_het,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\heterogeneity.csv")
-write.csv(bias_taulme4,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\bias_taulme4.csv")
-write.csv(bias_taulme4_mean,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\mean_bias_taulme4.csv")
-#######################################
-write.csv(tau_info,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\tau_info_bayes.csv",row.names =F)
-write.csv(interval,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\intervals.csv",row.names =F)
-write.csv(het1,"C:\\Users\\Theodoros Evrenoglou\\Desktop\\Paper\\Simulation NMA\\Scenaria 1-16\\More zeroes\\t=0\\Included\\heterogeneity_info.csv",row.names =F)
