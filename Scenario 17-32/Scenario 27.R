@@ -1,6 +1,10 @@
+############ The following data are being generated using the netmeta version 1.2-1 and meta version 4.15-1. ####################
+############ If you face any issue on reproducing the datasets please make sure that you have those versions installed. ####################
+
 library(dplyr)
 library(MASS)
 library(tidyverse)
+library(netmeta)
 
 
 
@@ -121,8 +125,6 @@ data2=data1
 data4=data1
 for (i in 1:N.sim){ names(data2[[i]])=c("study","treat","n","events")}
 for (i in 1:N.sim){ names(data4[[i]])=c("study","treatment","sampleSize","responders")}
-
-library(netmeta)
 for(i in 1:N.sim){
   data3[[i]] =pairwise(treat=t, event=r, n=n, studlab=stud, data=data1[[i]])
 }
