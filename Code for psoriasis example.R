@@ -63,41 +63,14 @@ PLNMA=function(data,events,n,study,treat,ref.group){
 ####################################################################################
 ####################################################################################
 
-#### A FUNCTION THAT AUTOMATICALLY REMOVES ALL STUDIES REPORTING ZERO EVENTS IN ALL TREATMENT ARMS #######
 
-drop00=function(data){
-  
-  events.study <- with(data, tapply(events, study, sum))
-  
-  if (any(events.study == 0)){
-    
-    zeroevents <- events.study == 0
-    keep <- !(zeroevents)
-    
-    data <- data[data$study %in% names(events.study)[keep], ,
-                 drop = FALSE]
-  }
-  
-  return(data)
-}
-
-
-####################################################################################
-####################################################################################
-####################################################################################
-
-#####  READ THE "psoriasis_data.csv" from: https://github.com/TEvrenoglou/PLNMA-simulation
+#####  READ THE "psoriasis_data.csv" from: https://github.com/TEvrenoglou/PL-NMA
 data11=read.csv("READ THE DATA HERE")
 
-
-##### CREATE A DATASET WITHOUT STUDIES WITH ZERO EVENTS IN ALL ARMS
-data110=drop00(data11)
 
 
 ##### BRING DATASET IN A SUITABLE FORM FOR netmeta
 p=pairwise(treat = data11$treat,event = data11$events,n=data11$n,studlab = data11$study,sm = "OR")
-
-
 
 
 ####################### MH-NMA ##############################
@@ -113,30 +86,20 @@ print(modelNCH)
 modelPLNMA=PLNMA(data = data11,events = data11$events,n=data11$n,treat = data11$treat,ref.group = "PBO",study = data11$study)
 print(modelPLNMA)
 
-#### Calculating of profile likelihood confidence intervals
-model_profile=brglm(cbind(events,n-events)~factor(treat)+factor(study),data=data11)
-
-
-
-prof_lik_conf=confint.brglm(model_profile)
-prof_lik_conf1=as.data.frame(prof_lik_conf)
-
-
 ### Calculating profile likelihood confidence intervals for OR
-prof_lik_conf1=exp(prof_lik_conf)
 
+data11$treat=as.factor(data11$treat)
+data11$treat=relevel(data11$treat,ref ="PBO" )
+
+
+model_profile=brglm(cbind(events,n-events)~factor(treat)+factor(study),data=data11,method = "brglm.fit")
+A=profileModel(model_profile,objective = "modifiedScoreStatistic",X = model.matrix(model_profile)[,!is.na(model_profile$coefficients)],
+               quantile=qchisq(0.95, 1))
+A1=profConfint(A)
+prof_lik_conf1=round(exp(A1),digits = 2)
 round(prof_lik_conf1,digits = 2)
 
 
-#### PLNMA model without studies reporting 0 events in all treatment arms
-modelPLNMA00=PLNMA(data = data110,events = data110$events,n=data110$n,treat = data110$treat,ref.group = "PBO",study = data110$study)
-print(modelPLNMA00)
-
-
-
-
-
-########################### Binomial-Normal with fixed intercept #########################
 
 treatment=matrix(ncol=1,nrow=length(data11$treat))
 for(i in 1:length(data11$treat)){
@@ -157,102 +120,6 @@ for(i in 1:length(data11$treat)){
 }
 
 data11$treatment=treatment
-modelBN=glmer(cbind(events,n-events)~factor(study)+factor(treatment)+(treatment-1|study),
-              data=data11,family = binomial)
-
-
-estsBN=summary(modelBN)$coefficients
-estsBN=estsBN[grep("treatment",rownames(estsBN)),]
-OR=exp(estsBN[,1])
-estsBN=cbind(estsBN,OR)
-
-ci.lowerBN=estsBN[,1]-1.96*estsBN[,2]
-ci.upperBN=estsBN[,1]+1.96*estsBN[,2]
-
-ci.lowerBN=exp(ci.lowerBN)
-ci.upperBN=exp(ci.upperBN)
-
-estsBN=cbind(estsBN,ci.lowerBN,ci.upperBN)
-estsBN=round(estsBN,digits = 2)
-
-print(estsBN)
-
-#################### Binomial-Normal with random intercept (all studies) ####################
-
-modelBN_r=glmer(cbind(events,n-events)~(1|study)+factor(treatment)+(treatment-1|study),
-                data=data11,family = binomial,
-                control=glmerControl(optimizer="bobyqa",
-                                     optCtrl=list(maxfun=2e5)))
-
-
-
-estsBN_r=summary(modelBN_r)$coefficients
-estsBN_r=estsBN_r[grep("treatment",rownames(estsBN_r)),]
-OR_r=exp(estsBN_r[,1])
-estsBN_r=cbind(estsBN_r,OR_r)
-
-ci.lowerBN_r=estsBN_r[,1]-1.96*estsBN_r[,2]
-ci.upperBN_r=estsBN_r[,1]+1.96*estsBN_r[,2]
-
-ci.lowerBN_r=exp(ci.lowerBN_r)
-ci.upperBN_r=exp(ci.upperBN_r)
-
-estsBN_r=cbind(estsBN_r,ci.lowerBN_r,ci.upperBN_r)
-estsBN_r=round(estsBN_r,digits = 2)
-
-print(estsBN_r)
-
-###############################################################################
-
-
-#################### Binomial-Normal with random intercept (without all-zero event studies) ####################
-
-
-treatment0=matrix(ncol=1,nrow=length(data110$treat))
-for(i in 1:length(data110$treat)){
-  
-  
-  if(data110$treat[i]=="PBO"){
-    treatment0[i,1]=1}
-  else if (data110$treat[i]=="anti-IL 12/23"){
-    treatment0[i,1]=2}
-  else if (data110$treat[i]=="anti-IL 17"){
-    treatment0[i,1]=3}
-  else if (data110$treat[i]=="anti-IL 23"){
-    treatment0[i,1]=4}
-  else if (data110$treat[i]=="anti-TNF"){
-    treatment0[i,1]=5}
-  else if (data110$treat[i]=="apremilast"){
-    treatment0[i,1]=6}
-}
-
-
-modelBN_r0=glmer(cbind(events,n-events)~(1|study)+factor(treatment0)+(treatment0-1|study),
-                 data=data110,family = binomial,
-                 control=glmerControl(optimizer="bobyqa",
-                                      optCtrl=list(maxfun=2e5)))
-
-
-
-
-estsBN_r0=summary(modelBN_r0)$coefficients
-estsBN_r0=estsBN_r0[grep("treatment",rownames(estsBN_r0)),]
-OR_r0=exp(estsBN_r0[,1])
-estsBN_r0=cbind(estsBN_r0,OR_r0)
-
-ci.lowerBN_r0=estsBN_r0[,1]-1.96*estsBN_r0[,2]
-ci.upperBN_r0=estsBN_r0[,1]+1.96*estsBN_r0[,2]
-
-ci.lowerBN_r0=exp(ci.lowerBN_r0)
-ci.upperBN_r0=exp(ci.upperBN_r0)
-
-estsBN_r0=cbind(estsBN_r0,ci.lowerBN_r0,ci.upperBN_r0)
-estsBN_r0=round(estsBN_r0,digits = 2)
-
-print(estsBN_r0)
-
-##########################################################
-
 
 ############# Common-effect logistic regression NMA #####################
 
@@ -279,7 +146,7 @@ print(ests_glm)
 
 
 ###############################################################################
-###### Bayesian model##########################################################
+############# Bayesian models ##########################################################
 
 data_bayes=data11[,-2]
 names(data_bayes)=c("study","sampleSize","responders","treatment")
@@ -289,11 +156,12 @@ names(data_bayes)=c("study","sampleSize","responders","treatment")
 mtc.network <- mtc.network(data.ab =data_bayes, description = "Network")
 
 
-##### Random-effects model
+##### Random-effects model (d~N(0,10000), tau~U(0,2)) 
 
-# specify the estimation parameters 
 mtc.model1 <-mtc.model(mtc.network, type ="consistency", om.scale = 2,
-                       hy.prior=mtc.hy.prior("std.dev","dunif", 0, 2),linearModel = "random",n.chain = 2,re.prior.sd = 100)
+                       hy.prior=mtc.hy.prior("std.dev","dunif", 0, 2),
+                       linearModel = "random",n.chain = 2,re.prior.sd = 100)
+
 
 
 mtc.model1$inits[[1]]$.RNG.name <- "base::Mersenne-Twister"
@@ -301,7 +169,10 @@ mtc.model1$inits[[2]]$.RNG.name <- "base::Mersenne-Twister"
 
 mtc.model1$inits[[1]]$.RNG.seed <- 58982
 mtc.model1$inits[[2]]$.RNG.seed <- 58983
+
+
 mtc.run1 <- mtc.run(mtc.model1, thin = 1,n.iter =50000,n.adapt = 10000)
+
 
 s1=summary(mtc.run1)$summaries[1]
 s2=summary(mtc.run1)$summaries[2]
@@ -314,8 +185,6 @@ print(round((exp(s2[1:nrow(s2)-1,1])),digits = 2)) ## lower bounds of credible i
 print(round((exp(s2[1:nrow(s2)-1,5])),digits = 2)) ## upper bounds of credible interval
 
 
-########### Print heterogeneity results in terms of tau
-
 tau=round((s1[nrow(s1),1]),digits = 2) ## exporting tau
 print(tau)
 
@@ -325,10 +194,53 @@ print(tau_lb)
 tau_ub=(round((s2[nrow(s2),5]),digits = 2)) ## upper bound for tau
 print(tau_ub)
 
+A=gelman.diag(mtc.run1)
+gelman.plot(mtc.run1)
 
-############### Common-effects model
-mtc.model2 <-mtc.model(mtc.network, type ="consistency", om.scale = 2,
-                       hy.prior=mtc.hy.prior("std.dev","dunif", 0, 2),linearModel = "fixed",n.chain = 2,re.prior.sd = 100)
+
+##### Random-effects model (d~N(0,100), tau~HN(1)) 
+
+hy.prior <- mtc.hy.prior(type="std.dev", distr="dhnorm", 0, 1)
+mtc.model11 <-mtc.model(mtc.network, type ="consistency",
+                        hy.prior=hy.prior,
+                        linearModel = "random",n.chain = 2,re.prior.sd = 10)
+
+
+mtc.model11$inits[[1]]$.RNG.name <- "base::Mersenne-Twister"
+mtc.model11$inits[[2]]$.RNG.name <- "base::Mersenne-Twister"
+
+mtc.model11$inits[[1]]$.RNG.seed <- 58982
+mtc.model11$inits[[2]]$.RNG.seed <- 58983
+
+mtc.run11 <- mtc.run(mtc.model11, thin = 1,n.iter =50000,n.adapt = 10000)
+
+
+s11=summary(mtc.run11)$summaries[1]
+s21=summary(mtc.run11)$summaries[2]
+s11=as.data.frame(s11)
+s21=as.data.frame(s21)
+
+###### Printing results in OR scale
+print(round((exp(s11[1:nrow(s11)-1,1])),digits = 2)) ### treatments effects
+print(round((exp(s21[1:nrow(s21)-1,1])),digits = 2)) ## lower bounds of credible interval
+print(round((exp(s21[1:nrow(s21)-1,5])),digits = 2)) ## upper bounds of credible interval
+
+
+tau1=round((s11[nrow(s11),1]),digits = 2) ## exporting tau
+print(tau1)
+
+tau_lb1=(round((s21[nrow(s21),1]),digits = 2)) ## lower bound for tau
+print(tau_lb1)
+
+tau_ub1=(round((s21[nrow(s21),5]),digits = 2)) ## upper bound for tau
+print(tau_ub1)
+
+A1=gelman.diag(mtc.run11)
+gelman.plot(mtc.run11)
+
+############### Common-effect (d~N(0,10000))  model
+mtc.model2 <-mtc.model(mtc.network, type ="consistency", om.scale = 2,linearModel = "fixed",n.chain = 2,re.prior.sd = 100)
+                       
 
 
 mtc.model2$inits[[1]]$.RNG.name <- "base::Mersenne-Twister"
@@ -351,5 +263,5 @@ print(round((exp(s12[,1])),digits = 2)) ### treatments effects
 print(round((exp(s22)),digits = 2)[,1]) ### lower bounds of credible interval
 print(round((exp(s22)),digits = 2)[,5]) ### upper bounds of credible interval
 
-
-
+A2=gelman.diag(mtc.run2)
+gelman.plot(mtc.run2)
