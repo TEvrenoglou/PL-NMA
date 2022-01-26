@@ -1,4 +1,5 @@
-
+############ The following data are being generated using the netmeta version 1.2-1 and meta version 4.15-1. ####################
+############ If you face any issue on reproducing the datasets please make sure that you have those versions installed. ####################
 
 library(dplyr)
 library(MASS)
