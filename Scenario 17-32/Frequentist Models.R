@@ -631,8 +631,6 @@ BN=function(X)
   
   return(list("bias_glm"=biasBN_glm,"cov_glm"=coverageBN_glm,"mse_glm"=mseBN_glm,
               "se_glm"=se_BN_glm,"length_glm"=length_BN_glm,
-              "lower_BN"=lower_BN,"upper_BN"=upper_BN,"estimate_BN"=estimate_BN,
-              "lower_BN_random"=lower_BN_random,"upper_BN_random"=upper_BN_random,"estimate_BN_random"=estimate_BN_random,
               "lower_glm"=lower_glm,"upper_glm"=upper_glm,"estimate_glm"=estimate_glm)
 
   )  
@@ -641,7 +639,6 @@ BN=function(X)
 clusterExport(cl2,"X3")
 clusterExport(cl2,"NT")
 clusterExport(cl2,"N.sim")
-clusterExport(cl2, "BN")
 clusterEvalQ(cl2, {library(glm)})
 l9=parLapply(cl2,1:N.sim, function(x) BN(X3[[x]]))
 
