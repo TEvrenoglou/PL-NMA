@@ -639,7 +639,6 @@ BN=function(X)
 clusterExport(cl2,"X3")
 clusterExport(cl2,"NT")
 clusterExport(cl2,"N.sim")
-clusterEvalQ(cl2, {library(glm)})
 l9=parLapply(cl2,1:N.sim, function(x) BN(X3[[x]]))
 
 
