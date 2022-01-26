@@ -5,7 +5,7 @@ library(netmeta)
 library(AICcmodavg)
 library(gemtc)
 
-data("Dong2013")
+data("Dong2013") #### The dataset is already embedded in netmeta package
 
 
 PLNMA=function(data,events,n,study,treat,ref.group){
@@ -81,15 +81,11 @@ Dong2013$treatment=relevel(Dong2013$treatment,ref = "Placebo")
 
 model_profile=brglm(cbind(death,randomized-death)~factor(treatment)+factor(id),data=Dong2013)
 
-
-
-prof_lik_conf=confint.brglm(model_profile)
-prof_lik_conf1=as.data.frame(prof_lik_conf)
-
-
 ### Calculating profile likelihood confidence intervals for OR
-prof_lik_conf1=exp(prof_lik_conf)
-
+A=profileModel(model_profile,objective = "modifiedScoreStatistic",X = model.matrix(model_profile)[,!is.na(model_profile$coefficients)],
+               quantile=qchisq(0.95, 1))
+A1=profConfint(A)
+prof_lik_conf1=round(exp(A1),digits = 2)
 round(prof_lik_conf1,digits = 2)
 
 
@@ -112,9 +108,9 @@ ci.upper_glm=exp(ci.upper_glm)
 
 ests_glm=cbind(ests_glm,ci.lower_glm,ci.upper_glm)
 ests_glm=round(ests_glm,digits = 2)
+print(ests_glm)
 
-
-########################### Binomial-Normal with fixed intercept #########################
+########################### Preparing data for Bayesian models #########################
 
 treat=matrix(ncol=1,nrow=length(Dong2013$treatment))
 
@@ -138,56 +134,7 @@ for(i in 1:length(Dong2013$treatment)){
 
 Dong2013$treat=treat
 
-modelBN=glmer(cbind(death,randomized-death)~factor(id)+factor(treat)+(treat-1|id),
-              data=Dong2013,family = binomial)
-
-
-estsBN=summary(modelBN)$coefficients
-estsBN=estsBN[grep("treat",rownames(estsBN)),]
-OR=exp(estsBN[,1])
-estsBN=cbind(estsBN,OR)
-
-ci.lowerBN=estsBN[,1]-1.96*estsBN[,2]
-ci.upperBN=estsBN[,1]+1.96*estsBN[,2]
-
-ci.lowerBN=exp(ci.lowerBN)
-ci.upperBN=exp(ci.upperBN)
-
-estsBN=cbind(estsBN,ci.lowerBN,ci.upperBN)
-estsBN=round(estsBN,digits = 2)
-
-
-########################### Binomial Normal with random intercept ########
-
-modelBN_r=glmer(cbind(death,randomized-death)~factor(treat)+(treat-1|id)+(1|id),
-                data=Dong2013,family = binomial,
-                control=glmerControl(optimizer="bobyqa",
-                                     optCtrl=list(maxfun=2e5)))
-
-
-estsBN_r=summary(modelBN_r)$coefficients
-estsBN_r=estsBN_r[grep("treat",rownames(estsBN_r)),]
-OR_r=exp(estsBN_r[,1])
-estsBN_r=cbind(estsBN_r,OR_r)
-
-ci.lowerBN_r=estsBN_r[,1]-1.96*estsBN_r[,2]
-ci.upperBN_r=estsBN_r[,1]+1.96*estsBN_r[,2]
-
-ci.lowerBN_r=exp(ci.lowerBN_r)
-ci.upperBN_r=exp(ci.upperBN_r)
-
-estsBN_r=cbind(estsBN_r,ci.lowerBN_r,ci.upperBN_r)
-estsBN_r=round(estsBN_r,digits = 2)
-
-
-
-
-###############################################################################
-
-
-
-
-###### Bayesian model
+###### Bayesian models ######################3
 data_bayes=Dong2013[,-2]
 names(data_bayes)=c("study","responders","sampleSize","treatment")
 
@@ -196,9 +143,8 @@ names(data_bayes)=c("study","responders","sampleSize","treatment")
 mtc.network <- mtc.network(data.ab =data_bayes, description = "Network")
 
 
-##### Random-effects model
+##### Random-effects model (d~N(0,10000), tau~U(0,2)) 
 
-# specify the estimation parameters 
 mtc.model1 <-mtc.model(mtc.network, type ="consistency", om.scale = 2,
                        hy.prior=mtc.hy.prior("std.dev","dunif", 0, 2),linearModel = "random",n.chain = 2,re.prior.sd = 100)
 
@@ -225,7 +171,49 @@ tau=round((s1[nrow(s1),1]),digits = 2) ## exporting tau
 tau_lb=(round((s2[nrow(s2),1]),digits = 2)) ## lower bound for tau
 tau_ub=(round((s2[nrow(s2),5]),digits = 2)) ## upper bound for tau
 
-############### Common-effects model
+print(tau)
+print(tau_lb)
+print(tau_ub)
+
+A=gelman.diag(mtc.run1)
+############# Random-effects model d~N(0,100), tau~HN(1) #############
+hy.prior <- mtc.hy.prior(type="std.dev", distr="dhnorm", 0, 1)
+
+mtc.model11 <-mtc.model(mtc.network, type ="consistency", om.scale = 2,
+                       hy.prior=hy.prior,linearModel = "random",n.chain = 2,re.prior.sd = 10)
+
+
+mtc.model11$inits[[1]]$.RNG.name <- "base::Mersenne-Twister"
+mtc.model11$inits[[2]]$.RNG.name <- "base::Mersenne-Twister"
+
+mtc.model11$inits[[1]]$.RNG.seed <- 58982
+mtc.model11$inits[[2]]$.RNG.seed <- 58983
+mtc.run11 <- mtc.run(mtc.model11, thin = 1,n.iter =50000,n.adapt = 10000)
+
+s11=summary(mtc.run11)$summaries[1]
+s21=summary(mtc.run11)$summaries[2]
+s11=as.data.frame(s11)
+s21=as.data.frame(s21)
+
+###### Printing results in OR scale
+print(round((exp(s11[1:nrow(s11)-1,1])),digits = 2)) ### treatments effects
+print(round((exp(s21[1:nrow(s21)-1,1])),digits = 2)) ## lower bounds of credible interval
+print(round((exp(s21[1:nrow(s21)-1,5])),digits = 2)) ## upper bounds of credible interval
+
+
+tau1=round((s11[nrow(s11),1]),digits = 2) ## exporting tau
+tau_lb1=(round((s21[nrow(s21),1]),digits = 2)) ## lower bound for tau
+tau_ub1=(round((s21[nrow(s21),5]),digits = 2)) ## upper bound for tau
+
+print(tau1)
+print(tau_lb1)
+print(tau_ub1)
+
+
+A1=gelman.diag(mtc.run11)
+#######################################################
+
+############### Common-effect (d~N(0,10000))  model
 mtc.model2 <-mtc.model(mtc.network, type ="consistency", om.scale = 2,
                        hy.prior=mtc.hy.prior("std.dev","dunif", 0, 2),linearModel = "fixed",n.chain = 2,re.prior.sd = 100)
 
@@ -258,8 +246,3 @@ gelman.plot(mtc.run1)
 
 ### Common effects model
 gelman.plot(mtc.run2)
-
-
-
-
-
